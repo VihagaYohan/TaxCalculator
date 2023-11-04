@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.calculatorapp.ui.theme.CalculatorAppTheme
 
@@ -59,8 +60,10 @@ fun TipTimeLayout(
     var amountInput by remember { mutableStateOf("")}
     var tipInput by remember { mutableStateOf("")}
 
-    val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tipPercent = tipInput.toDoubleOrNull()?: 0.0
+    val amount = amountInput.toDoubleOrNull() ?: 0.0 // convert to double with null safety
+    val tipPercent = tipInput.toDoubleOrNull()?: 0.0 // convert to double with null safety
+
+    // calculate tip amount
     val tip = calculateTip(amount, tipPercent)
 
     Column(
@@ -84,7 +87,11 @@ fun TipTimeLayout(
                 .fillMaxWidth(),
             value = amountInput,
             onValueChange = { amountInput = it},
-            label = stringResource(id = R.string.bill_amount)
+            label = stringResource(id = R.string.bill_amount),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
         )
 
         EditNumberField(
@@ -93,7 +100,12 @@ fun TipTimeLayout(
                 .fillMaxSize(),
             value = tipInput,
             onValueChange = { tipInput = it },
-            label = stringResource(id = R.string.how_was_the_service))
+            label = stringResource(id = R.string.how_was_the_service),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            )
+        )
         Text(
             text = stringResource(id = R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -108,7 +120,8 @@ fun EditNumberField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    label: String
+    label: String,
+    keyboardOptions: KeyboardOptions
 ) {
     TextField(
         modifier = modifier,
@@ -121,9 +134,7 @@ fun EditNumberField(
         },
         singleLine = true,
         maxLines = 1,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
-        )
+        keyboardOptions = keyboardOptions
     )
 }
 
